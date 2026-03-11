@@ -17,7 +17,7 @@
 
     header {
       text-align: center;
-      padding: 72px 24px 48px;
+      padding: 44px 24px 32px;
       border-bottom: 1px solid #222;
     }
 
@@ -47,11 +47,11 @@
     #menu {
       max-width: 860px;
       margin: 0 auto;
-      padding: 20px 24px 80px;
+      padding: 12px 24px 48px;
     }
 
     .item {
-      padding: 26px 0;
+      padding: 16px 0;
       border-bottom: 1px solid #1a1a1a;
     }
 
@@ -73,14 +73,14 @@
 
     .item-photos {
       display: flex;
-      gap: 10px;
-      margin-top: 14px;
+      gap: 8px;
+      margin-top: 10px;
     }
 
     .photo-wrap {
       position: relative;
       flex: 1;
-      max-width: 200px;
+      max-width: 150px;
     }
 
     .photo-wrap img {
@@ -156,7 +156,7 @@
       letter-spacing: 0.1em;
       text-transform: uppercase;
       color: #444;
-      margin-top: 5px;
+      margin-top: 3px;
       text-align: center;
     }
 
@@ -172,7 +172,7 @@
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
-      margin-top: 8px;
+      margin-top: 5px;
       align-items: center;
     }
 
@@ -221,7 +221,7 @@
     #controls {
       max-width: 860px;
       margin: 0 auto;
-      padding: 28px 24px 0;
+      padding: 18px 24px 0;
       display: flex;
       flex-direction: column;
       gap: 14px;
@@ -280,15 +280,15 @@
 
     @media (max-width: 600px) {
       header {
-        padding: 48px 20px 32px;
+        padding: 32px 20px 24px;
       }
 
       #menu {
-        padding: 16px 16px 60px;
+        padding: 10px 16px 40px;
       }
 
       .item {
-        padding: 22px 0;
+        padding: 14px 0;
       }
 
       .strain-name {
@@ -335,6 +335,7 @@
   <div id="controls">
     <input id="search" type="search" placeholder="Search strains…">
     <div id="filters"></div>
+    <div id="filters-type"></div>
   </div>
 
   <main id="menu">
@@ -382,7 +383,8 @@
     }
 
     let allItems = [];
-    let activeFilter = 'All';
+    let activeFlowerType = 'All';
+    let activeType = 'All';
 
     async function loadMenu() {
       const res = await fetch(CSV_URL);
@@ -407,17 +409,31 @@
     }
 
     function buildFilters() {
-      const types = ['All', ...new Set(allItems.map(i => i["Type of Flower"]).filter(Boolean).sort())];
-      document.getElementById('filters').innerHTML = types.map(t => `
-        <button class="filter-btn ${t === 'All' ? 'active' : ''}" data-type="${t}">${t}</button>
+      const flowerTypes = ['All', ...new Set(allItems.map(i => i["Type of Flower"]).filter(Boolean).sort())];
+      document.getElementById('filters').innerHTML = flowerTypes.map(t => `
+        <button class="filter-btn ${t === 'All' ? 'active' : ''}" data-field="flower" data-type="${t}">${t}</button>
+      `).join('');
+
+      const types = ['All', ...new Set(allItems.map(i => i["Type"]).filter(Boolean).sort())];
+      document.getElementById('filters-type').innerHTML = types.map(t => `
+        <button class="filter-btn ${t === 'All' ? 'active' : ''}" data-field="type" data-type="${t}">${t}</button>
       `).join('');
 
       document.getElementById('filters').addEventListener('click', e => {
         const btn = e.target.closest('.filter-btn');
         if (!btn) return;
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('#filters .filter-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        activeFilter = btn.dataset.type;
+        activeFlowerType = btn.dataset.type;
+        applyFilters();
+      });
+
+      document.getElementById('filters-type').addEventListener('click', e => {
+        const btn = e.target.closest('.filter-btn');
+        if (!btn) return;
+        document.querySelectorAll('#filters-type .filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeType = btn.dataset.type;
         applyFilters();
       });
     }
@@ -429,9 +445,10 @@
     function applyFilters() {
       const query = normalize(document.getElementById('search').value.trim());
       const results = allItems.filter(item => {
-        const matchType = activeFilter === 'All' || item["Type of Flower"] === activeFilter;
+        const matchFlowerType = activeFlowerType === 'All' || item["Type of Flower"] === activeFlowerType;
+        const matchType = activeType === 'All' || item["Type"] === activeType;
         const matchSearch = !query || normalize(item["Strain Name"]).includes(query);
-        return matchType && matchSearch;
+        return matchFlowerType && matchType && matchSearch;
       });
       render(results);
     }
