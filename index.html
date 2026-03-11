@@ -83,6 +83,52 @@
       border-radius: 6px;
       display: block;
       background: #1a1a1a;
+      cursor: zoom-in;
+      transition: opacity 0.15s;
+    }
+
+    .photo-wrap img:hover {
+      opacity: 0.85;
+    }
+
+    /* Lightbox */
+    #lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.92);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #lightbox.open {
+      display: flex;
+    }
+
+    #lightbox img {
+      max-width: 90vw;
+      max-height: 88vh;
+      object-fit: contain;
+      border-radius: 8px;
+      box-shadow: 0 0 60px rgba(0,0,0,0.8);
+    }
+
+    #lightbox-close {
+      position: fixed;
+      top: 20px;
+      right: 28px;
+      font-size: 2rem;
+      color: #888;
+      cursor: pointer;
+      line-height: 1;
+      background: none;
+      border: none;
+      transition: color 0.15s;
+    }
+
+    #lightbox-close:hover {
+      color: #e8e4de;
     }
 
     .photo-label {
@@ -161,6 +207,11 @@
   <main id="menu">
     <div class="status">Loading...</div>
   </main>
+
+  <div id="lightbox">
+    <button id="lightbox-close">&times;</button>
+    <img id="lightbox-img" src="" alt="">
+  </div>
 
   <script>
     const CSV_URL = "https://docs.google.com/spreadsheets/d/1d7r0PNbs0WiuDo-1E_Tq4RHRldrYussa9hkzaA6rB44/export?format=csv&gid=0";
@@ -250,7 +301,7 @@
             <div class="item-photos">
               ${photos.map(p => `
                 <div class="photo-wrap">
-                  <img src="${p.url}" alt="${p.label}" loading="lazy">
+                  <img src="${p.url}" alt="${p.label}" loading="lazy" onclick="openLightbox(this.src)">
                   <div class="photo-label">${p.label}</div>
                 </div>
               `).join('')}
@@ -259,6 +310,23 @@
         `;
       }).join('');
     }
+
+    const lightbox   = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+
+    function openLightbox(src) {
+      lightboxImg.src = src.replace('sz=w600', 'sz=w1600');
+      lightbox.classList.add('open');
+    }
+
+    function closeLightbox() {
+      lightbox.classList.remove('open');
+      lightboxImg.src = '';
+    }
+
+    document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
+    lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
 
     loadMenu().catch(() => {
       document.getElementById('menu').innerHTML = '<div class="status">Failed to load menu.</div>';
