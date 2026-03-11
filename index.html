@@ -29,6 +29,13 @@
       color: #c9a96e;
     }
 
+    header img.logo {
+      height: 80px;
+      width: auto;
+      object-fit: contain;
+      margin-bottom: 20px;
+    }
+
     header p {
       margin-top: 12px;
       font-size: 0.75rem;
@@ -89,6 +96,19 @@
 
     .photo-wrap img:hover {
       opacity: 0.85;
+    }
+
+    .photo-placeholder {
+      width: 100%;
+      aspect-ratio: 4/3;
+      border-radius: 6px;
+      background: #111;
+      border: 1px solid #1e1e1e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #333;
+      font-size: 1.4rem;
     }
 
     /* Lightbox */
@@ -196,10 +216,57 @@
       font-size: 0.85rem;
       letter-spacing: 0.15em;
     }
+
+    @media (max-width: 600px) {
+      header {
+        padding: 48px 20px 32px;
+      }
+
+      #menu {
+        padding: 16px 16px 60px;
+      }
+
+      .item {
+        padding: 22px 0;
+      }
+
+      .strain-name {
+        font-size: 1.1rem;
+      }
+
+      .price {
+        font-size: 1.1rem;
+      }
+
+      /* Hide dots, rely on space-between */
+      .dots {
+        display: none;
+      }
+
+      /* Photos scroll horizontally */
+      .item-photos {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        gap: 8px;
+        margin-top: 12px;
+        padding-bottom: 4px;
+      }
+
+      .item-photos::-webkit-scrollbar {
+        display: none;
+      }
+
+      .photo-wrap {
+        flex: 0 0 140px;
+        max-width: none;
+      }
+    }
   </style>
 </head>
 <body>
   <header>
+    <img class="logo" src="logo.png" alt="Elevar">
     <h1>ELEVAR</h1>
     <p>Premium Flower Selection</p>
   </header>
@@ -301,7 +368,7 @@
             <div class="item-photos">
               ${photos.map(p => `
                 <div class="photo-wrap">
-                  <img src="${p.url}" alt="${p.label}" loading="lazy" onclick="openLightbox(this.src)">
+                  <img src="${p.url}" alt="${p.label}" loading="lazy" onclick="openLightbox(this.src)" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'photo-placeholder',textContent:'✕'}))">
                   <div class="photo-label">${p.label}</div>
                 </div>
               `).join('')}
@@ -311,7 +378,7 @@
       }).join('');
     }
 
-    const lightbox   = document.getElementById('lightbox');
+    const lightbox    = document.getElementById('lightbox');
     const lightboxImg = document.getElementById('lightbox-img');
 
     function openLightbox(src) {
