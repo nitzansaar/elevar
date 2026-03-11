@@ -217,6 +217,67 @@
       letter-spacing: 0.15em;
     }
 
+    /* ── Controls ── */
+    #controls {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 28px 24px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    #search {
+      width: 100%;
+      background: #111;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      padding: 11px 16px;
+      color: #e8e4de;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    #search::placeholder { color: #444; }
+    #search:focus { border-color: #444; }
+
+    #filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .filter-btn {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #666;
+      background: none;
+      border: 1px solid #2a2a2a;
+      border-radius: 20px;
+      padding: 5px 14px;
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s, background 0.15s;
+    }
+
+    .filter-btn:hover {
+      color: #e8e4de;
+      border-color: #444;
+    }
+
+    .filter-btn.active {
+      color: #0c0c0c;
+      background: #c9a96e;
+      border-color: #c9a96e;
+    }
+
+    @media (max-width: 600px) {
+      #controls { padding: 20px 16px 0; }
+    }
+
     @media (max-width: 600px) {
       header {
         padding: 48px 20px 32px;
@@ -271,6 +332,11 @@
     <p>Premium Flower Selection</p>
   </header>
 
+  <div id="controls">
+    <input id="search" type="search" placeholder="Search strains…">
+    <div id="filters"></div>
+  </div>
+
   <main id="menu">
     <div class="status">Loading...</div>
   </main>
@@ -315,6 +381,9 @@
         : `$${n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     }
 
+    let allItems = [];
+    let activeFilter = 'All';
+
     async function loadMenu() {
       const res = await fetch(CSV_URL);
       const text = await res.text();
@@ -325,7 +394,7 @@
         Object.fromEntries(headers.map((h, i) => [h, row[i]?.trim() ?? '']))
       );
 
-      const filtered = items
+      allItems = items
         .filter(item => item["Sale Price"])
         .map(item => ({
           ...item,
@@ -333,13 +402,44 @@
         }))
         .sort((a, b) => a["Strain Name"].localeCompare(b["Strain Name"]));
 
-      render(filtered);
+      buildFilters();
+      applyFilters();
+    }
+
+    function buildFilters() {
+      const types = ['All', ...new Set(allItems.map(i => i["Type of Flower"]).filter(Boolean).sort())];
+      document.getElementById('filters').innerHTML = types.map(t => `
+        <button class="filter-btn ${t === 'All' ? 'active' : ''}" data-type="${t}">${t}</button>
+      `).join('');
+
+      document.getElementById('filters').addEventListener('click', e => {
+        const btn = e.target.closest('.filter-btn');
+        if (!btn) return;
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeFilter = btn.dataset.type;
+        applyFilters();
+      });
+    }
+
+    function normalize(str) {
+      return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    }
+
+    function applyFilters() {
+      const query = normalize(document.getElementById('search').value.trim());
+      const results = allItems.filter(item => {
+        const matchType = activeFilter === 'All' || item["Type of Flower"] === activeFilter;
+        const matchSearch = !query || normalize(item["Strain Name"]).includes(query);
+        return matchType && matchSearch;
+      });
+      render(results);
     }
 
     function render(items) {
       const menu = document.getElementById('menu');
       if (!items.length) {
-        menu.innerHTML = '<div class="status">No items available.</div>';
+        menu.innerHTML = '<div class="status">No results found.</div>';
         return;
       }
 
@@ -391,6 +491,7 @@
       lightboxImg.src = '';
     }
 
+    document.getElementById('search').addEventListener('input', applyFilters);
     document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
     lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
     document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
