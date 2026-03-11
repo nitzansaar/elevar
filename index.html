@@ -1,114 +1,395 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Elevar — Menu</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <title>Elevar — Premium Selection</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
   <style>
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg-color: #030303;
+      --surface: #0a0a0a;
+      --surface-hover: #111111;
+      --text-main: #f5f2eb;
+      --text-muted: #888888;
+      --accent: #d4af37;
+      /* Gold */
+      --accent-glow: rgba(212, 175, 55, 0.15);
+      --border: rgba(255, 255, 255, 0.08);
+      --glass-bg: rgba(10, 10, 10, 0.6);
+    }
+
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
     body {
-      background: #0c0c0c;
-      color: #e8e4de;
+      background: var(--bg-color);
+      color: var(--text-main);
       font-family: 'Inter', sans-serif;
       min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* Ambient background glow */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -20%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100vw;
+      height: 50vh;
+      background: radial-gradient(ellipse at top, var(--accent-glow), transparent 70%);
+      pointer-events: none;
+      z-index: -1;
     }
 
     header {
       text-align: center;
-      padding: 44px 24px 32px;
-      border-bottom: 1px solid #222;
+      padding: 60px 24px 40px;
+      position: relative;
+      background: linear-gradient(to bottom, var(--bg-color) 0%, transparent 100%);
+    }
+
+    header img.logo {
+      height: 90px;
+      width: auto;
+      object-fit: contain;
+      margin-bottom: 24px;
+      filter: drop-shadow(0 0 20px var(--accent-glow));
     }
 
     header h1 {
       font-family: 'Playfair Display', serif;
-      font-size: clamp(2.5rem, 6vw, 4.5rem);
-      font-weight: 400;
-      letter-spacing: 0.25em;
-      color: #c9a96e;
-    }
-
-    header img.logo {
-      height: 80px;
-      width: auto;
-      object-fit: contain;
-      margin-bottom: 20px;
+      font-size: clamp(3rem, 8vw, 5.5rem);
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      color: var(--text-main);
+      margin-left: 0.1em;
+      background: linear-gradient(135deg, #fff 0%, #d4af37 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     }
 
     header p {
-      margin-top: 12px;
-      font-size: 0.75rem;
-      letter-spacing: 0.35em;
+      margin-top: 16px;
+      font-size: 0.8rem;
+      letter-spacing: 0.4em;
       text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    /* ── Controls ── */
+    #controls-wrapper {
+      padding: 20px 24px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    #controls {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .search-container {
+      position: relative;
+      max-width: 500px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    #search {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      border-radius: 30px;
+      padding: 14px 24px 14px 48px;
+      color: var(--text-main);
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      outline: none;
+      transition: all 0.3s ease;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    #search::placeholder {
       color: #555;
     }
 
-    #menu {
-      max-width: 860px;
-      margin: 0 auto;
-      padding: 12px 24px 48px;
+    #search:focus {
+      border-color: var(--accent);
+      background: rgba(255, 255, 255, 0.05);
+      box-shadow: 0 0 20px var(--accent-glow), inset 0 2px 4px rgba(0, 0, 0, 0.2);
     }
 
-    .item {
-      padding: 16px 0;
-      border-bottom: 1px solid #1a1a1a;
+    .search-icon {
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 18px;
+      height: 18px;
+      fill: #555;
+      transition: fill 0.3s ease;
+      pointer-events: none;
     }
 
-    .item:last-child {
-      border-bottom: none;
+    #search:focus+.search-icon {
+      fill: var(--accent);
     }
 
-    .item-header {
+    .filters-wrapper {
       display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      gap: 24px;
+      flex-direction: column;
+      gap: 12px;
+      align-items: center;
     }
 
-    .item-left {
-      flex: 1;
-      min-width: 0;
+    .filter-group {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
     }
 
-    .item-photos {
+    .filter-btn {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      border-radius: 30px;
+      padding: 8px 20px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .filter-btn:hover {
+      color: var(--text-main);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-1px);
+    }
+
+    .filter-btn.active {
+      color: #000;
+      background: var(--accent);
+      border-color: var(--accent);
+      box-shadow: 0 4px 15px var(--accent-glow);
+    }
+
+    /* ── Main Grid ── */
+    #menu {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 60px 24px 100px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 32px;
+    }
+
+    .status {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 100px 20px;
+      color: var(--text-muted);
+      font-size: 1rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 0.5;
+      }
+
+      50% {
+        opacity: 1;
+      }
+    }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      z-index: 10;
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(212, 175, 55, 0.3);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 30px var(--accent-glow);
+      background: var(--surface-hover);
+    }
+
+    /* Primary Image Area */
+    .card-images {
+      position: relative;
+      width: 100%;
+      height: 300px;
+      background: #000;
+      overflow: hidden;
+    }
+
+    .primary-photo {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.7s ease, filter 0.3s;
+      cursor: zoom-in;
+    }
+
+    .card:hover .primary-photo {
+      transform: scale(1.05);
+    }
+
+    /* Thumbnails container */
+    .thumbnails {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
       display: flex;
       gap: 8px;
-      margin-top: 10px;
     }
 
-    .photo-wrap {
-      position: relative;
-      flex: 1;
-      max-width: 150px;
-    }
-
-    .photo-wrap img {
-      width: 100%;
-      aspect-ratio: 4/3;
-      object-fit: cover;
-      border-radius: 6px;
-      display: block;
-      background: #1a1a1a;
+    .thumb-wrap {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      background: #000;
       cursor: zoom-in;
-      transition: opacity 0.15s;
+      transition: border-color 0.3s;
     }
 
-    .photo-wrap img:hover {
-      opacity: 0.85;
+    .thumb-wrap:hover {
+      border-color: var(--accent);
     }
 
-    .photo-placeholder {
+    .thumb-wrap img {
       width: 100%;
-      aspect-ratio: 4/3;
-      border-radius: 6px;
-      background: #111;
-      border: 1px solid #1e1e1e;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.8;
+      transition: opacity 0.3s;
+    }
+
+    .thumb-wrap:hover img {
+      opacity: 1;
+    }
+
+    /* Badges */
+    .card-badges {
+      position: absolute;
+      top: 16px;
+      left: 16px;
       display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #333;
-      font-size: 1.4rem;
+      flex-direction: column;
+      gap: 6px;
+      z-index: 2;
+    }
+
+    .badge-type,
+    .badge-thca {
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-main);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .badge-thca {
+      color: #a3c49c;
+      border-color: rgba(138, 171, 132, 0.3);
+    }
+
+    /* Card Content */
+    .card-content {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .strain-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      font-weight: 500;
+      color: var(--text-main);
+      line-height: 1.2;
+    }
+
+    .strain-category {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 6px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .price {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      color: var(--accent);
+      white-space: nowrap;
+      background: linear-gradient(135deg, #eadd96 0%, #d4af37 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 600;
     }
 
     /* Lightbox */
@@ -116,215 +397,130 @@
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.92);
-      z-index: 1000;
+      background: rgba(0, 0, 0, 0.95);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      z-index: 2000;
       align-items: center;
       justify-content: center;
+      flex-direction: column;
+      opacity: 0;
+      transition: opacity 0.4s ease;
     }
 
     #lightbox.open {
       display: flex;
+      opacity: 1;
     }
 
     #lightbox img {
       max-width: 90vw;
-      max-height: 88vh;
+      max-height: 80vh;
       object-fit: contain;
-      border-radius: 8px;
-      box-shadow: 0 0 60px rgba(0,0,0,0.8);
+      border-radius: 12px;
+      box-shadow: 0 0 100px rgba(0, 0, 0, 1);
+      transform: scale(0.95);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    #lightbox.open img {
+      transform: scale(1);
     }
 
     #lightbox-close {
       position: fixed;
-      top: 20px;
-      right: 28px;
+      top: 30px;
+      right: 40px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: 2rem;
-      color: #888;
+      color: #fff;
       cursor: pointer;
+      transition: all 0.3s;
+      z-index: 2010;
+    }
+
+    #lightbox-close:after {
+      content: '×';
       line-height: 1;
-      background: none;
-      border: none;
-      transition: color 0.15s;
+      margin-top: -4px;
     }
 
     #lightbox-close:hover {
-      color: #e8e4de;
+      background: rgba(255, 255, 255, 0.1);
+      transform: rotate(90deg);
+      border-color: rgba(255, 255, 255, 0.3);
     }
 
-    .photo-label {
-      font-size: 0.65rem;
+    .lightbox-caption {
+      margin-top: 24px;
+      color: var(--text-main);
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
       letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: #444;
-      margin-top: 3px;
-      text-align: center;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+      transform: translateY(20px);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    .strain-name {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.25rem;
-      font-weight: 400;
-      color: #e8e4de;
-      line-height: 1.3;
+    #lightbox.open .lightbox-caption {
+      transform: translateY(0);
     }
 
-    .item-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 5px;
-      align-items: center;
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 10px;
     }
 
-    .tag {
-      font-size: 0.7rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: #666;
-      border: 1px solid #2a2a2a;
-      border-radius: 20px;
-      padding: 3px 10px;
+    ::-webkit-scrollbar-track {
+      background: var(--bg-color);
     }
 
-    .thca {
-      font-size: 0.75rem;
-      color: #8aab84;
-      letter-spacing: 0.05em;
+    ::-webkit-scrollbar-thumb {
+      background: #333;
+      border-radius: 5px;
     }
 
-    .price {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.35rem;
-      color: #c9a96e;
-      white-space: nowrap;
-      flex-shrink: 0;
+    ::-webkit-scrollbar-thumb:hover {
+      background: #555;
     }
 
-    .dots {
-      flex: 1;
-      border-bottom: 1px dotted #2a2a2a;
-      margin: 0 16px;
-      min-width: 20px;
-      position: relative;
-      top: -4px;
-    }
-
-    .status {
-      text-align: center;
-      padding: 100px 20px;
-      color: #444;
-      font-size: 0.85rem;
-      letter-spacing: 0.15em;
-    }
-
-    /* ── Controls ── */
-    #controls {
-      max-width: 860px;
-      margin: 0 auto;
-      padding: 18px 24px 0;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    #search {
-      width: 100%;
-      background: #111;
-      border: 1px solid #2a2a2a;
-      border-radius: 8px;
-      padding: 11px 16px;
-      color: #e8e4de;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.9rem;
-      outline: none;
-      transition: border-color 0.15s;
-    }
-
-    #search::placeholder { color: #444; }
-    #search:focus { border-color: #444; }
-
-    #filters {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .filter-btn {
-      font-family: 'Inter', sans-serif;
-      font-size: 0.7rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: #666;
-      background: none;
-      border: 1px solid #2a2a2a;
-      border-radius: 20px;
-      padding: 5px 14px;
-      cursor: pointer;
-      transition: color 0.15s, border-color 0.15s, background 0.15s;
-    }
-
-    .filter-btn:hover {
-      color: #e8e4de;
-      border-color: #444;
-    }
-
-    .filter-btn.active {
-      color: #0c0c0c;
-      background: #c9a96e;
-      border-color: #c9a96e;
-    }
-
-    @media (max-width: 600px) {
-      #controls { padding: 20px 16px 0; }
-    }
-
-    @media (max-width: 600px) {
+    @media (max-width: 768px) {
       header {
-        padding: 32px 20px 24px;
+        padding: 40px 20px 20px;
       }
 
       #menu {
-        padding: 10px 16px 40px;
+        padding: 40px 16px 80px;
+        gap: 24px;
       }
 
-      .item {
-        padding: 14px 0;
+      .card-images {
+        height: 260px;
       }
 
       .strain-name {
-        font-size: 1.1rem;
+        font-size: 1.35rem;
       }
 
       .price {
-        font-size: 1.1rem;
+        font-size: 1.4rem;
       }
 
-      /* Hide dots, rely on space-between */
-      .dots {
-        display: none;
-      }
-
-      /* Photos scroll horizontally */
-      .item-photos {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-        gap: 8px;
-        margin-top: 12px;
-        padding-bottom: 4px;
-      }
-
-      .item-photos::-webkit-scrollbar {
-        display: none;
-      }
-
-      .photo-wrap {
-        flex: 0 0 140px;
-        max-width: none;
+      #lightbox-close {
+        top: 20px;
+        right: 20px;
       }
     }
   </style>
 </head>
+
 <body>
   <header>
     <img class="logo" src="logo.png" alt="Elevar">
@@ -332,19 +528,30 @@
     <p>Premium Flower Selection</p>
   </header>
 
-  <div id="controls">
-    <input id="search" type="search" placeholder="Search strains…">
-    <div id="filters"></div>
-    <div id="filters-type"></div>
+  <div id="controls-wrapper">
+    <div id="controls">
+      <div class="search-container">
+        <input id="search" type="search" placeholder="Discover strains…">
+        <svg class="search-icon" viewBox="0 0 24 24">
+          <path
+            d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+        </svg>
+      </div>
+      <div class="filters-wrapper">
+        <div id="filters" class="filter-group"></div>
+        <div id="filters-type" class="filter-group"></div>
+      </div>
+    </div>
   </div>
 
   <main id="menu">
-    <div class="status">Loading...</div>
+    <div class="status">Curating your selection...</div>
   </main>
 
   <div id="lightbox">
-    <button id="lightbox-close">&times;</button>
+    <div id="lightbox-close"></div>
     <img id="lightbox-img" src="" alt="">
+    <div id="lightbox-caption" class="lightbox-caption"></div>
   </div>
 
   <script>
@@ -387,25 +594,29 @@
     let activeType = 'All';
 
     async function loadMenu() {
-      const res = await fetch(CSV_URL);
-      const text = await res.text();
-      const rows = parseCSV(text);
-      const headers = rows[0].map(h => h.trim());
+      try {
+        const res = await fetch(CSV_URL);
+        const text = await res.text();
+        const rows = parseCSV(text);
+        const headers = rows[0].map(h => h.trim());
 
-      const items = rows.slice(1).map(row =>
-        Object.fromEntries(headers.map((h, i) => [h, row[i]?.trim() ?? '']))
-      );
+        const items = rows.slice(1).map(row =>
+          Object.fromEntries(headers.map((h, i) => [h, row[i]?.trim() ?? '']))
+        );
 
-      allItems = items
-        .filter(item => item["Sale Price"])
-        .map(item => ({
-          ...item,
-          displayPrice: parseFloat(item["Sale Price"].replace(/[^0-9.]/g, '')) + 350
-        }))
-        .sort((a, b) => a["Strain Name"].localeCompare(b["Strain Name"]));
+        allItems = items
+          .filter(item => item["Sale Price"])
+          .map(item => ({
+            ...item,
+            displayPrice: parseFloat(item["Sale Price"].replace(/[^0-9.]/g, '')) + 350
+          }))
+          .sort((a, b) => a["Strain Name"].localeCompare(b["Strain Name"]));
 
-      buildFilters();
-      applyFilters();
+        buildFilters();
+        applyFilters();
+      } catch (err) {
+        document.getElementById('menu').innerHTML = '<div class="status">Failed to load curated menu. Please refresh.</div>';
+      }
     }
 
     function buildFilters() {
@@ -456,56 +667,78 @@
     function render(items) {
       const menu = document.getElementById('menu');
       if (!items.length) {
-        menu.innerHTML = '<div class="status">No results found.</div>';
+        menu.innerHTML = '<div class="status">No selections found matching your criteria.</div>';
         return;
       }
 
       menu.innerHTML = items.map(item => {
-        const tags = [item["Type of Flower"], item["Type"]].filter(Boolean);
         const photos = [
-          { url: driveToImg(item["Photo of Entire Bag"]),   label: "Entire Bag"  },
-          { url: driveToImg(item["Photo of Single Nug"]),   label: "Single Nug"  },
-          { url: driveToImg(item["Photo of Triple Nug"]),   label: "Triple Nug"  },
+          { url: driveToImg(item["Photo of Entire Bag"]), label: "Entire Bag" },
+          { url: driveToImg(item["Photo of Single Nug"]), label: "Single Nug" },
+          { url: driveToImg(item["Photo of Triple Nug"]), label: "Triple Nug" },
         ].filter(p => p.url);
 
+        const primaryPhoto = photos[0];
+        const otherPhotos = photos.slice(1);
+
         return `
-          <div class="item">
-            <div class="item-header">
-              <div class="item-left">
-                <div class="strain-name">${item["Strain Name"]}</div>
-                <div class="item-tags">
-                  ${tags.map(t => `<span class="tag">${t}</span>`).join('')}
-                  ${item["THCA %"] ? `<span class="thca">THCA ${item["THCA %"]}</span>` : ''}
-                </div>
+          <div class="card">
+            <div class="card-images">
+              <div class="card-badges">
+                ${item["Type of Flower"] ? `<span class="badge-type">${item["Type of Flower"]}</span>` : ''}
+                ${item["THCA %"] ? `<span class="badge-thca">THCA ${item["THCA %"]}</span>` : ''}
               </div>
-              <div class="dots"></div>
-              <div class="price">${formatPrice(item.displayPrice)}</div>
-            </div>
-            ${photos.length ? `
-            <div class="item-photos">
-              ${photos.map(p => `
-                <div class="photo-wrap">
-                  <img src="${p.url}" alt="${p.label}" loading="lazy" onclick="openLightbox(this.src)" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'photo-placeholder',textContent:'✕'}))">
-                  <div class="photo-label">${p.label}</div>
+              
+              ${primaryPhoto ? `
+                <img class="primary-photo" src="${primaryPhoto.url}" alt="${item["Strain Name"]}" loading="lazy" onclick="openLightbox(this.src, '${item["Strain Name"].replace(/'/g, "\\'")} - ${primaryPhoto.label}')" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'100%\\' height=\\'100%\\'><rect width=\\'100%\\' height=\\'100%\\' fill=\\'%23111\\'/><text x=\\'50%\\' y=\\'50%\\' fill=\\'%23444\\' text-anchor=\\'middle\\' dy=\\'.3em\\' font-family=\\'Arial\\' font-size=\\'14\\'>Image Unavailable</text></svg>'">
+              ` : `
+                <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:#111; color:#333; font-size:1.5rem; font-family:'Playfair Display', serif;">ELEVAR</div>
+              `}
+              
+              ${otherPhotos.length ? `
+                <div class="thumbnails">
+                  ${otherPhotos.map(p => `
+                    <div class="thumb-wrap" onclick="openLightbox('${p.url}', '${item["Strain Name"].replace(/'/g, "\\'")} - ${p.label}')">
+                      <img src="${p.url}" alt="${p.label}" loading="lazy">
+                    </div>
+                  `).join('')}
                 </div>
-              `).join('')}
-            </div>` : ''}
+              ` : ''}
+            </div>
+            
+            <div class="card-content">
+              <div class="card-header">
+                <div>
+                  <h3 class="strain-name">${item["Strain Name"]}</h3>
+                  <div class="strain-category">${item["Type"] || 'Premium Selection'}</div>
+                </div>
+                <div class="price">${formatPrice(item.displayPrice)}</div>
+              </div>
+            </div>
           </div>
         `;
       }).join('');
     }
 
-    const lightbox    = document.getElementById('lightbox');
+    const lightbox = document.getElementById('lightbox');
     const lightboxImg = document.getElementById('lightbox-img');
+    const lightboxCap = document.getElementById('lightbox-caption');
 
-    function openLightbox(src) {
+    function openLightbox(src, caption) {
       lightboxImg.src = src.replace('sz=w600', 'sz=w1600');
+      lightboxCap.textContent = caption || '';
       lightbox.classList.add('open');
+      document.body.style.overflow = 'hidden';
     }
 
     function closeLightbox() {
       lightbox.classList.remove('open');
-      lightboxImg.src = '';
+      document.body.style.overflow = '';
+      setTimeout(() => {
+        if (!lightbox.classList.contains('open')) {
+          lightboxImg.src = '';
+        }
+      }, 400); // match transition
     }
 
     document.getElementById('search').addEventListener('input', applyFilters);
@@ -513,9 +746,9 @@
     lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
     document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
 
-    loadMenu().catch(() => {
-      document.getElementById('menu').innerHTML = '<div class="status">Failed to load menu.</div>';
-    });
+    // Initial load
+    loadMenu();
   </script>
 </body>
+
 </html>
