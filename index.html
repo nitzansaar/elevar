@@ -44,10 +44,6 @@
     }
 
     .item {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      gap: 24px;
       padding: 26px 0;
       border-bottom: 1px solid #1a1a1a;
     }
@@ -56,9 +52,46 @@
       border-bottom: none;
     }
 
+    .item-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
     .item-left {
       flex: 1;
       min-width: 0;
+    }
+
+    .item-photos {
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .photo-wrap {
+      position: relative;
+      flex: 1;
+      max-width: 200px;
+    }
+
+    .photo-wrap img {
+      width: 100%;
+      aspect-ratio: 4/3;
+      object-fit: cover;
+      border-radius: 6px;
+      display: block;
+      background: #1a1a1a;
+    }
+
+    .photo-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #444;
+      margin-top: 5px;
+      text-align: center;
     }
 
     .strain-name {
@@ -149,6 +182,15 @@
       return rows;
     }
 
+    function driveToImg(url) {
+      if (!url) return null;
+      const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+      if (match) return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w600`;
+      const idMatch = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+      if (idMatch) return `https://drive.google.com/thumbnail?id=${idMatch[1]}&sz=w600`;
+      return null;
+    }
+
     function formatPrice(n) {
       return Number.isInteger(n)
         ? `$${n.toLocaleString()}`
@@ -185,17 +227,34 @@
 
       menu.innerHTML = items.map(item => {
         const tags = [item["Type of Flower"], item["Type"]].filter(Boolean);
+        const photos = [
+          { url: driveToImg(item["Photo of Entire Bag"]),   label: "Entire Bag"  },
+          { url: driveToImg(item["Photo of Single Nug"]),   label: "Single Nug"  },
+          { url: driveToImg(item["Photo of Triple Nug"]),   label: "Triple Nug"  },
+        ].filter(p => p.url);
+
         return `
           <div class="item">
-            <div class="item-left">
-              <div class="strain-name">${item["Strain Name"]}</div>
-              <div class="item-tags">
-                ${tags.map(t => `<span class="tag">${t}</span>`).join('')}
-                ${item["THCA %"] ? `<span class="thca">THCA ${item["THCA %"]}</span>` : ''}
+            <div class="item-header">
+              <div class="item-left">
+                <div class="strain-name">${item["Strain Name"]}</div>
+                <div class="item-tags">
+                  ${tags.map(t => `<span class="tag">${t}</span>`).join('')}
+                  ${item["THCA %"] ? `<span class="thca">THCA ${item["THCA %"]}</span>` : ''}
+                </div>
               </div>
+              <div class="dots"></div>
+              <div class="price">${formatPrice(item.displayPrice)}</div>
             </div>
-            <div class="dots"></div>
-            <div class="price">${formatPrice(item.displayPrice)}</div>
+            ${photos.length ? `
+            <div class="item-photos">
+              ${photos.map(p => `
+                <div class="photo-wrap">
+                  <img src="${p.url}" alt="${p.label}" loading="lazy">
+                  <div class="photo-label">${p.label}</div>
+                </div>
+              `).join('')}
+            </div>` : ''}
           </div>
         `;
       }).join('');
