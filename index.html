@@ -554,8 +554,9 @@
     <div id="lightbox-caption" class="lightbox-caption"></div>
   </div>
 
+  <script src="config.js"></script>
   <script>
-    const CSV_URL = "https://docs.google.com/spreadsheets/d/1d7r0PNbs0WiuDo-1E_Tq4RHRldrYussa9hkzaA6rB44/export?format=csv&gid=0";
+    const CSV_URL = CONFIG.SHEET_URL;
 
     function parseCSV(text) {
       const rows = [];
@@ -608,7 +609,7 @@
           .filter(item => item["Sale Price"])
           .map(item => ({
             ...item,
-            displayPrice: parseFloat(item["Sale Price"].replace(/[^0-9.]/g, '')) + 350
+            displayPrice: parseFloat(item["Sale Price"].replace(/[^0-9.]/g, '')) + CONFIG.MARKUP
           }))
           .sort((a, b) => a["Strain Name"].localeCompare(b["Strain Name"]));
 
